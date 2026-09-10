@@ -16,3 +16,5 @@ log/
 *.bag
 *.db3
 *.mcap
+*:Zone.Identifier
+*:Zone.Identifier

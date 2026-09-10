@@ -1,0 +1,11 @@
+# Build context is docker/ only -- the image never COPYs workspace source,
+# build/, install/ or log/ (the workspace is bind-mounted at runtime). These
+# patterns are a safety net.
+**/__pycache__
+**/*.pyc
+**/.git
+**/build
+**/install
+**/log
+*Zone.Identifier
+*.md

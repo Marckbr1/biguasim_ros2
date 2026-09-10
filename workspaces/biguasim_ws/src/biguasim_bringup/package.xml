@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>biguasim_bringup</name>
+  <version>0.1.0</version>
+  <description>
+    Orchestration only, no code of its own. Starts a BiguaSim world and
+    (optionally) the biguasim_bridge normalizers, the biguasim_sensor_check
+    monitor and RViz2. How BiguaSim itself is launched is a parameter
+    (biguasim_cmd) because it depends on how install_biguasim.sh installed
+    it -- see biguasim.launch.py and config/biguasim.yaml.
+  </description>
+
+  <maintainer email="marckquiroz8@gmail.com">biguauser</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>biguasim_bridge</exec_depend>
+  <exec_depend>biguasim_sensor_check</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>ros2launch</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

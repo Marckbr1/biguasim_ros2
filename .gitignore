@@ -1,0 +1,13 @@
+**/__pycache__/
+**/*.py[cod]
+*.Zone.Identifier
+
+# colcon output (also covered by workspaces/.gitignore)
+build/
+install/
+log/
+
+# rosbags
+*.bag
+*.db3
+*.mcap

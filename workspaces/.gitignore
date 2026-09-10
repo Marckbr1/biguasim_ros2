@@ -1,0 +1,28 @@
+# One .gitignore for everything under workspaces/.
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# ROS 2 / colcon
+build/
+install/
+log/
+
+# Rosbags (large, not versioned)
+*.bag
+*.db3
+*.mcap
+
+# BiguaSim clone (installed inside the container by install_biguasim.sh)
+*/src/biguasim_upstream
+
+# OS / editor / transfer cruft
+*Zone.Identifier
+.DS_Store
+.idea/
+.vscode/
+.ipynb_checkpoints/

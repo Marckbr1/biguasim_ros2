@@ -1,0 +1,18 @@
+# Example params for biguasim_sensor_check. Load with:
+#   ros2 run biguasim_sensor_check sensor_check_node --ros-args \
+#     --params-file <this file>
+# Edit the topic names / types / expected rates to match your BiguaSim build.
+biguasim_sensor_check:
+  ros__parameters:
+    report_period: 2.0
+    window: 5.0
+    stale_after: 2.0
+    exit_after: 0.0
+    sensors:
+      - "/biguasim/rov0_id0/DynamicsSensor/Odom|nav_msgs/msg/Odometry|30"
+      - "/biguasim/rov0_id0/ImagingSonar|biguasim_interfaces/msg/ImagingSonar|5"
+      - "/biguasim/rov0_id0/IMUSensor|sensor_msgs/msg/Imu|30"
+      - "/biguasim/rov0_id0/DVLSensor/Velocity|geometry_msgs/msg/TwistWithCovarianceStamped|5"
+      - "/biguasim/rov0_id0/DVLSensor/Range|biguasim_interfaces/msg/DVLSensorRange|5"
+      - "/biguasim/rov0_id0/DepthSensor|geometry_msgs/msg/PoseWithCovarianceStamped|30"
+      - "/biguasim/rov0_id0/MagnetometerSensor|sensor_msgs/msg/MagneticField|30"

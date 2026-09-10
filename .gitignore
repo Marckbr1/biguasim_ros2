@@ -7,6 +7,11 @@ build/
 install/
 log/
 
+# BiguaSim upstream clone: installed by hand into biguasim/ inside the
+# container (see BIGUASIM.md at the repo root), bind-mounted from there.
+# It is its own git repo -- never committed here.
+/biguasim/
+
 # rosbags
 *.bag
 *.db3

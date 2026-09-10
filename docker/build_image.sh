@@ -4,9 +4,9 @@
 # Usage:
 #   ./build_image.sh [tag] [extra docker build args...]
 #
-# Re-run whenever docker/Dockerfile, docker/build.sh or
-# docker/install_biguasim.sh change. NOT needed for workspace edits (bind-
-# mounted) nor for BiguaSim updates (installed inside the container).
+# Re-run whenever docker/Dockerfile or docker/build.sh change. NOT needed
+# for workspace edits (bind-mounted) nor for BiguaSim updates (cloned +
+# installed by hand inside the container).
 set -e
 
 IMAGE_NAME="biguasim-ros2"

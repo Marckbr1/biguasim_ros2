@@ -11,8 +11,7 @@ biguasim_ws/
     │                          #   recreated from a recorded bag schema.
     │                          #   Delete once the upstream package is installed.
     ├── biguasim_bridge/       # polar/custom msgs -> standard ROS 2 types for RViz
-    ├── biguasim_sensor_check/ # subscribe to every sensor, print a rate/status table
-    └── biguasim_bringup/      # one launch: BiguaSim world + bridge + checker (+ RViz)
+    └── biguasim_sensor_check/ # subscribe to every sensor, print a rate/status table
 ```
 
 ## Build
@@ -28,23 +27,21 @@ source install/setup.bash
 ## Use
 
 ```bash
-# everything at once (BiguaSim world + bridge + sensor checker + RViz):
-export BIGUASIM_CMD="ros2 run <biguasim_pkg> <sim_executable>"   # once
-ros2 launch biguasim_bringup biguasim.launch.py world:=<world_name> rviz:=true
+# 1. install + start BiguaSim by hand (see the repo-root README.md
+#    -> "Installing BiguaSim")
+
+# 2. check the sensors are flowing
+ros2 launch biguasim_sensor_check sensor_check.launch.py
+
+# 3. (optional) normalize sonar + odom for RViz
+ros2 launch biguasim_bridge biguasim_bridge.launch.py
 ```
 
-Pieces separately:
+If you only have a recorded bag (no live sim):
 
 ```bash
-ros2 launch biguasim_sensor_check sensor_check.launch.py   # just the rate/status table
-ros2 launch biguasim_bridge biguasim_bridge.launch.py      # just the normalizers
-```
-
-Recorded bag, no live sim:
-
-```bash
-ros2 launch biguasim_bringup biguasim.launch.py run_sim:=false use_sim_time:=true &
 ros2 bag play <bag> --clock
+ros2 launch biguasim_sensor_check sensor_check.launch.py use_sim_time:=true
 ```
 
 ## Expected sensor topics

@@ -8,10 +8,13 @@
 #     is bind-mounted at runtime (see run_container.sh) at
 #     /home/biguauser/workspaces -- editing on the host is visible inside
 #     the container immediately, no image rebuild.
-#   - BiguaSim is a fast-moving research dependency: it is cloned + built
-#     ONCE inside the running container with docker/install_biguasim.sh
-#     (set BIGUASIM_REPO to its git URL first). Keeping it out of the image
-#     means updating it is `git pull` in place, not a rebuild.
+#   - BiguaSim is a fast-moving research dependency: YOU clone and install it
+#     by hand ONCE inside the running container, after creating it (see the
+#     "Installing BiguaSim" section of the READMEs). run_container.sh
+#     bind-mounts <repo>/biguasim -> /home/biguauser/biguasim so that clone
+#     persists across `docker rm` and is editable from the host. Keeping it
+#     out of the image means updating it is `git pull` in place, not a
+#     rebuild.
 #
 # Purpose of this environment: bring up BiguaSim + ROS 2 and verify the
 # simulator's sensor topics are flowing (biguasim_sensor_check), i.e. test
@@ -31,9 +34,9 @@ ENV DEBIAN_FRONTEND=noninteractive \
 ARG UID=1000
 ARG GID=1000
 
-# Build tools for ROS 2 workspaces + cloning/building BiguaSim, plus the few
-# ROS 2 packages the sensor-interface workspace needs that are not in the
-# desktop base:
+# Build tools for ROS 2 workspaces + cloning/installing BiguaSim (git, pip),
+# plus the few ROS 2 packages the sensor-interface workspace needs that are
+# not in the desktop base:
 #   - cv-bridge / image-transport(+plugins) : the sonar bridge decodes the
 #     ImagingSonar sub-images and republishes a sensor_msgs/Image.
 #   - python3-numpy : biguasim_bridge (polar->fan remap) and sensor_check.
@@ -86,17 +89,16 @@ RUN rosdep init 2>/dev/null || true; \
     for i in 1 2 3 4 5; do rosdep update && break || { echo "rosdep update retry $i ..."; sleep 10; }; done; true
 
 COPY build.sh /build.sh
-COPY install_biguasim.sh /usr/local/bin/install_biguasim.sh
-RUN chmod +x /build.sh /usr/local/bin/install_biguasim.sh
+RUN chmod +x /build.sh
 
 USER biguauser
 WORKDIR /home/biguauser
 
 # Extra interactive shells (`docker exec ... bash`) get the same env.
+# (BiguaSim is a pip editable install -- importable with no sourcing.)
 RUN printf '%s\n' \
     'source /opt/ros/jazzy/setup.bash' \
     'for o in /home/biguauser/workspaces/*/install/setup.bash; do [ -f "$o" ] && source "$o"; done' \
-    '[ -f /home/biguauser/biguasim/setup.bash ] && source /home/biguauser/biguasim/setup.bash' \
     >> /home/biguauser/.bashrc
 
 ENTRYPOINT ["/build.sh"]

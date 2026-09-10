@@ -3,11 +3,11 @@
 # automatically on every container start (ENTRYPOINT) -- you should not need
 # to run it by hand.
 #
-# It only prepares the shell environment (sources ROS 2, every already-built
-# workspace overlay under workspaces/, and BiguaSim if installed; exports a
-# few standard ROS/GUI variables). It does NOT build anything: `colcon
-# build` and install_biguasim.sh are explicit one-time steps you run inside
-# the container so start/stop stays fast.
+# It only prepares the shell environment (sources ROS 2 and every already-
+# built workspace overlay under workspaces/; exports a few standard ROS/GUI
+# variables). It does NOT build anything: `colcon build` and the manual
+# BiguaSim install are explicit one-time steps you run inside the container
+# so start/stop stays fast.
 set -e
 
 # ROS 2 Jazzy
@@ -19,8 +19,9 @@ for overlay in /home/biguauser/workspaces/*/install/setup.bash; do
     [ -f "$overlay" ] && source "$overlay"
 done
 
-# BiguaSim environment, if install_biguasim.sh has been run and produced one.
-[ -f /home/biguauser/biguasim/setup.bash ] && source /home/biguauser/biguasim/setup.bash || true
+# BiguaSim itself needs no sourcing here: it is a pip editable install
+# (`pip install -e ~/biguasim`), importable from any shell once you have run
+# that step by hand -- see the "Installing BiguaSim" section of the READMEs.
 
 # Standard ROS env vars (":=" respects values passed via `docker run -e`).
 : "${ROS_DOMAIN_ID:=0}"

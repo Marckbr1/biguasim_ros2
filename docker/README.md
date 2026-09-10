@@ -9,10 +9,9 @@ are baked into the image.
 | File | Runs where | Purpose |
 |---|---|---|
 | `Dockerfile` | `docker build` | ROS 2 Jazzy base + build tools + `biguauser` (host UID/GID) + sonar/image deps |
-| `build.sh` | container (automatic) | entrypoint: sources ROS 2, workspace overlays and BiguaSim env |
-| `install_biguasim.sh` | inside the container (once) | clone + install BiguaSim from `$BIGUASIM_REPO` |
+| `build.sh` | container (automatic) | entrypoint: sources ROS 2 and the workspace overlays |
 | `build_image.sh` | host | build the image |
-| `run_container.sh` | host | create the container (workspaces/ mount, GPU, X11, `/dev/dri`, joystick) |
+| `run_container.sh` | host | create the container (`workspaces/` + `biguasim/` mounts, GPU, X11, `/dev/dri`, joystick) |
 | `start_container.sh` | host | start the existing container |
 | `enter_container.sh` | host | extra shell in the running container |
 
@@ -23,7 +22,7 @@ cd docker
 ./build_image.sh            # biguasim-ros2:latest
 ```
 
-Re-run only when `Dockerfile` / `build.sh` / `install_biguasim.sh` change.
+Re-run only when `Dockerfile` or `build.sh` change.
 
 ## Create / start / enter
 
@@ -34,21 +33,32 @@ Re-run only when `Dockerfile` / `build.sh` / `install_biguasim.sh` change.
 ```
 
 `run_container.sh` mounts this repo's `workspaces/` at
-`/home/biguauser/workspaces`, requests the NVIDIA GPU (BiguaSim's Unreal
-renderer), forwards X11 + `/dev/dri` (hardware GL for RViz2), and passes
-`/dev/input` + the host `input` group (USB joystick).
+`/home/biguauser/workspaces` and `biguasim/` at `/home/biguauser/biguasim`,
+requests the NVIDIA GPU (BiguaSim's Unreal renderer), forwards X11 +
+`/dev/dri` (hardware GL for RViz2), and passes `/dev/input` + the host
+`input` group (USB joystick).
 
-## Install BiguaSim (inside the container, once)
+## Install BiguaSim (by hand, inside the container, once)
+
+BiguaSim is **not** installed by any script. After the container exists you
+clone + `pip install -e` it yourself into the bind-mounted `~/biguasim`
+folder, and separately get its sensors onto ROS 2 (it has no ROS launch of
+its own). Full instructions, including a runnable scenario example:
+[`../BIGUASIM.md`](../BIGUASIM.md).
+
+Short version:
 
 ```bash
-BIGUASIM_REPO=https://github.com/<org>/<biguasim>.git install_biguasim.sh
+git clone https://github.com/hydrone-furg/biguasim.git ~/biguasim
+cd ~/biguasim
+pip install -e . --break-system-packages
+python3 -c "import biguasim; biguasim.install('SkyDive')"   # world assets, several GB
 ```
 
-The script clones to `~/biguasim/src`, auto-detects the install type
-(ROS 2 package → link into `workspaces/biguasim_ws/src`; Python →
-`pip install -e`; CMake → build), and writes `~/biguasim/setup.bash`
-(sourced automatically on the next container entry). Edit that file to add
-BiguaSim-specific exports (world path, sim host/port…).
+`~/biguasim` is bind-mounted from `<repo>/biguasim` on the host, so the clone
+and the world assets survive `docker rm`. After recreating the container,
+re-run only `pip install -e . --break-system-packages` (the editable link
+lives in the container layer, not the mount).
 
 ## Remove
 
@@ -56,3 +66,6 @@ BiguaSim-specific exports (world path, sim host/port…).
 docker stop biguasim-ros2 && docker rm biguasim-ros2
 docker rmi biguasim-ros2:latest        # also drop the image
 ```
+
+The `biguasim/` and `workspaces/*/build|install|log` folders on the host are
+untouched by `docker rm`.

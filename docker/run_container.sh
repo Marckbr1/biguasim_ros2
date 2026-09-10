@@ -8,6 +8,10 @@
 #   - Mounts <repo>/workspaces -> /home/biguauser/workspaces (single volume
 #     for the whole folder; biguasim_ws/src is versioned with the repo,
 #     build/ install/ log/ persist across restarts, gitignored).
+#   - Mounts <repo>/biguasim -> /home/biguauser/biguasim (empty at first).
+#     You clone + `pip install -e` BiguaSim into it by hand once the
+#     container is up (see the READMEs); the mount makes that survive
+#     `docker rm` and stay editable from the host. Gitignored.
 #   - GPU (NVIDIA Container Toolkit) for BiguaSim's Unreal renderer.
 #   - X11 + /dev/dri for RViz2 / GUI windows with hardware OpenGL.
 #   - /dev/input + host "input" group so a USB joystick works
@@ -20,7 +24,8 @@ CONTAINER_NAME="biguasim-ros2"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 WORKSPACES_DIR="${REPO_ROOT}/workspaces"
-mkdir -p "$WORKSPACES_DIR"
+BIGUASIM_DIR="${REPO_ROOT}/biguasim"
+mkdir -p "$WORKSPACES_DIR" "$BIGUASIM_DIR"
 
 if [ "$(docker ps -aq -f name="^${CONTAINER_NAME}$")" ]; then
     echo "Container '${CONTAINER_NAME}' already exists."
@@ -69,6 +74,7 @@ docker run -it \
     -e NVIDIA_VISIBLE_DEVICES=all \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v "${WORKSPACES_DIR}:/home/biguauser/workspaces" \
+    -v "${BIGUASIM_DIR}:/home/biguauser/biguasim" \
     "${DRI_ARGS[@]}" \
     "${JOYSTICK_ARGS[@]}" \
     "${GROUP_ADD_ARGS[@]}" \

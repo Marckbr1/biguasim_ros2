@@ -6,9 +6,9 @@
   <description>
     BiguaSim simulator custom message types (ImagingSonar, DVLSensorRange),
     rebuilt field-for-field from the schema embedded in a recorded BiguaSim
-    rosbag. Use this only until the upstream biguasim_interfaces package is
-    available in the container (install_biguasim.sh) -- if it is, delete
-    this package so there is a single definition.
+    rosbag. Use this only until a BiguaSim install provides the upstream
+    biguasim_interfaces as a ROS 2 package -- if it does, delete this
+    package so there is a single definition.
   </description>
 
   <maintainer email="marckquiroz8@gmail.com">biguauser</maintainer>

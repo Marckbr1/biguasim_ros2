@@ -41,6 +41,7 @@ Inside the container:
 git clone https://github.com/hydrone-furg/biguasim.git ~/biguasim
 cd ~/biguasim
 pip install -e . --break-system-packages
+python3 -c "import biguasim; biguasim.install('SkyDive')" 
 ```
 
 ## Build the ROS 2 workspace

@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>biguasim_trajectory</name>
+  <version>0.1.0</version>
+  <description>
+    Genera trayectorias controladas (cuadrado, circulo) para un agente
+    BiguaSim via la abstraccion 'cmd_pos_yaw', portado y recortado del
+    paquete biguasim_trajectory del workspace 'anterior'. Incluye el
+    escenario de un solo agente (DynamicsSensor + ImagingSonar,
+    control_abstraction cmd_pos_yaw) y los launch files para correr la
+    trayectoria sola o junto con la visualizacion del sonar
+    (biguasim_bridge + RViz2).
+  </description>
+
+  <maintainer email="marckquiroz8@gmail.com">biguauser</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <exec_depend>biguasim_main</exec_depend>
+  <exec_depend>biguasim_bridge</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

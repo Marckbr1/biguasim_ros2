@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>biguasim_examples</name>
+  <version>0.1.0</version>
+  <description>
+    Example teleoperation/visualization nodes for BiguaSim, ported from
+    holoocean_examples (joystick teleop, waypoint follower, camera HUD).
+    Unlike HoloOcean, BiguaSim agents take a single generic command vector
+    per control_abstraction instead of a typed AgentCommand + Fossen
+    autopilot -- see README.md for what that means for the joystick and
+    waypoint nodes specifically.
+  </description>
+
+  <maintainer email="marckquiroz8@gmail.com">biguauser</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>python3-numpy</depend>
+  <depend>python3-yaml</depend>
+  <exec_depend>biguasim_main</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
+  <exec_depend>joy_linux</exec_depend>
+  <exec_depend>rqt_image_view</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

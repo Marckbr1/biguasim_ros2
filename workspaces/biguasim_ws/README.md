@@ -11,7 +11,9 @@ biguasim_ws/
     │                          #   recreated from a recorded bag schema.
     │                          #   Delete once the upstream package is installed.
     ├── biguasim_bridge/       # polar/custom msgs -> standard ROS 2 types for RViz
-    └── biguasim_sensor_check/ # subscribe to every sensor, print a rate/status table
+    ├── biguasim_sensor_check/ # subscribe to every sensor, print a rate/status table
+    └── biguasim_trajectory/   # move an agent in a square/circle (cmd_pos_yaw),
+                                #   optionally with the sonar view turned on
 ```
 
 ## Build
@@ -35,6 +37,10 @@ ros2 launch biguasim_sensor_check sensor_check.launch.py
 
 # 3. (optional) normalize sonar + odom for RViz
 ros2 launch biguasim_bridge biguasim_bridge.launch.py
+
+# 4. (optional) move the robot in a square or circle -- see biguasim_trajectory/README.md
+ros2 launch biguasim_trajectory trajectory_launch.py trajectory_type:=square
+ros2 launch biguasim_trajectory trajectory_sonar_launch.py trajectory_type:=circle   # + sonar view
 ```
 
 If you only have a recorded bag (no live sim):

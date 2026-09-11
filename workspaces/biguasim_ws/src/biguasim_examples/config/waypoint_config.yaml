@@ -1,0 +1,39 @@
+# Ported from holoocean_examples/config/waypoint_config.yaml.
+/biguasim/waypoint_follower:
+  ros__parameters:
+    waypoint_threshold: 3.0
+    waypoint_file: 'config/sv_waypoints.yaml'
+    relative_path: true
+    # BiguaSim always expands each scenario agent into batch instances named
+    # "<agent>-id<N>" (even batch_size:1 -> "-id0"), translated to '_id<N>'
+    # for ROS topics -- see biguasim/environments.py, split_agents(). There
+    # is never a bare '<agent_name>/...' topic, so this must include the id.
+    agent_name: 'auv0_id0'
+    odom_topic: ''            # '' -> '<agent_name>/DynamicsSensor/Odom'
+    loop_waypoints: true
+    marker_scale: 0.2
+    marker_frame: 'map'
+    # command_slots puts this value straight into the raw per-rotor command
+    # (see below), so it's a rotor speed (rad/s, range +-278.9 for BlueROV2),
+    # not a physical m/s -- 1.0 here would be imperceptible. 30 is the
+    # magnitude empirically verified to move the vehicle (see command_slots
+    # comment below).
+    max_surge: 30.0
+    max_yaw_rate: 1.0
+    yaw_gain: 1.0
+    # CONFIRMED for this scenario's auv0 (BlueROV2 / cmd_motor_speeds, a
+    # 6-element raw per-rotor speed vector, order r1..r6 -- see MOTOR_SPEEDS
+    # in biguasim_main/interface.py and get_cmd_motor_speeds() in
+    # biguasim/dynamics/uuv.py, which passes cmd_motor_speeds straight
+    # through with no mixing). Rotor geometry (biguasim/dynamics/agents.py,
+    # BlueROV2._params): r1/r2 are the vertical thrusters (heave) -- left at
+    # 'zero' here, untouched. r3/r4/r5/r6 are the four 45-degree horizontal
+    # thrusters; +surge on r3/r4 and -surge on r5/r6 sums to pure +X thrust
+    # with zero net lateral force (verified empirically: x moved from 10.0
+    # to 10.31 over 4s with a constant [0,0,30,30,-30,-30] pub, y unchanged).
+    # yaw_rate is NOT mixed in yet -- the vehicle drives straight ahead on
+    # its initial heading rather than steering toward each waypoint. Proper
+    # steering needs a real thruster allocation (combining surge AND
+    # yaw_rate per slot), which is more than a single-token substitution;
+    # left as a follow-up.
+    command_slots: ['zero', 'zero', 'surge', 'surge', '-surge', '-surge']

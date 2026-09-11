@@ -1,0 +1,23 @@
+# Ported from holoocean_examples/config/joy_config.yaml.
+# Applies to every node in the `biguasim` namespace launched by joy_launch.py.
+/biguasim/**:
+  ros__parameters:
+    relative_path: true
+    params_file: 'config/config.yaml'   # resolved against biguasim_main's share dir
+
+/biguasim/joy_node:
+  ros__parameters:
+    dev: '/dev/input/js0'
+    deadzone: 0.05
+    autorepeat_rate: 20.0
+
+/biguasim/joy_biguasim:
+  ros__parameters:
+    button.arm: 7
+    button.disarm: 6
+    button.reset: 8
+    agents.buttons: [0]
+    agents.default: ''   # '' -> first agent in the scenario
+    # axis_map.<agent_name> must be set per-agent once you know your
+    # scenario's control vector layout -- see biguasim_examples/README.md.
+    # Left blank here on purpose (defaults to all -1 / no-op in the node).

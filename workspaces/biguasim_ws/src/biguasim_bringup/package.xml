@@ -18,6 +18,7 @@
 
   <exec_depend>biguasim_bridge</exec_depend>
   <exec_depend>biguasim_sensor_check</exec_depend>
+  <exec_depend>biguasim_main</exec_depend>
   <exec_depend>rviz2</exec_depend>
   <exec_depend>ros2launch</exec_depend>
 

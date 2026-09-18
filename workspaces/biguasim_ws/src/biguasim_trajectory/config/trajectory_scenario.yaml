@@ -32,6 +32,10 @@
               configuration:
                 UseCOM: true
                 UseRPY: false
+            - sensor_type: IMUSensor
+              ros_publish: true
+            - sensor_type: DVLSensor
+              ros_publish: true
             - sensor_type: ImagingSonar
               ros_publish: true
               configuration:
@@ -51,6 +55,36 @@
                 ViewRegion: true
                 ViewOctree: -1
                 SendGTPointCloud: true
+            - sensor_type: RGBCamera
+              ros_publish: true
+              configuration:
+                CaptureWidth: 640
+                CaptureHeight: 480
+        # sensors:
+        #    - sensor_type: DynamicsSensor
+        #      ros_publish: true
+        #      configuration:
+        #        UseCOM: true
+        #        UseRPY: false
+          #  -  sensor_type: ImagingSonar
+          #     ros_publish: true
+          #     configuration:
+          #      RangeBins: 64
+          #      AzimuthBins: 64
+          #      RangeMin: 0
+          #      RangeMax: 40
+          #      InitOctreeRange: 20
+          #      Elevation: 28
+          #      Azimuth: 28.8
+          #      AzimuthStreaks: -1
+          #      ScaleNoise: true
+          #      AddSigma: 0.15
+          #      MultSigma: 0.2
+          #      RangeSigma: 0.0
+          #      MultiPath: true
+          #      ViewRegion: true
+          #      ViewOctree: -1
+          #      SendGTPointCloud: true
           dynamics:
             batch_size: 1
           control_abstraction: 'cmd_pos_yaw'

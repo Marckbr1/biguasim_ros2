@@ -1,0 +1,22 @@
+# Cenário: biguasim_trajectory/config/trajectory_scenario.yaml
+# Agente auv0 (BlueROV2) com DynamicsSensor, IMUSensor, DVLSensor e ImagingSonar.
+sensores_biguasim:
+  ros__parameters:
+    prefixo: "/biguasim/auv0_id0"
+
+    sub_odom: "DynamicsSensor/Odom"
+    sub_imu: "IMUSensor"
+    sub_sonar: "ImagingSonar"
+    sub_dvl_vel: "DVLSensor/Velocity"
+    sub_dvl_range: "DVLSensor/Range"
+
+    # Não declarados no cenário atual -> desativados.
+    sub_depth: ""
+    sub_mag: ""
+    topico_camera: ""      # habilite RGBCamera no YAML do cenário primeiro
+
+    # O sonar_bridge e o camera_hud assinam com QoS default (RELIABLE),
+    # então o simulador publica em RELIABLE. Se algum tópico não conectar,
+    # confira com: ros2 topic info <topico> --verbose
+    qos_best_effort: false
+    periodo_status: 2.0

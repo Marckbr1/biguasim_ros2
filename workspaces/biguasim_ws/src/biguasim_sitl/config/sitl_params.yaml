@@ -1,0 +1,29 @@
+# Parâmetros do nó SITL do BiguaSim.
+#
+# A origem GPS precisa bater com o -L passado ao sim_vehicle.py.
+# RATBeach é o default do repositório upstream (branch sitl-test).
+biguasim_sitl:
+  ros__parameters:
+    vehicle: "BlueROV2"          # BlueROV2 | BlueROVHeavy | BlueBoat | DjiMatrice | TorpedoAUV
+    package_name: "SkyDive"
+    world: "Pier-Harbor"
+    ticks_per_sec: 200
+    show_viewport: true
+    location: [0.0, 0.0, -1.0]
+
+    gps_lat: 33.810313
+    gps_lon: -118.393867
+
+    bridge_address: "127.0.0.1"
+    bridge_port: 9002
+
+    # Percepção desligada por padrão: ligue só quando precisar, para não
+    # penalizar a taxa do SITL.
+    enable_sonar: false
+    sonar_hz: 10
+    enable_camera: false
+    camera_hz: 20
+    camera_width: 640
+    camera_height: 480
+
+    periodo_status: 2.0

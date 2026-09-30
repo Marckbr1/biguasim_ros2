@@ -1,0 +1,24 @@
+# Waypoints em coordenadas LOCAIS do simulador, metros, referencial NWU:
+#   x = Norte, y = Oeste, z = Cima (negativo = submerso)
+# São convertidos para lat/lon com a mesma origem GPS da ponte.
+#
+# gps_lat/gps_lon DEVEM ser idênticos aos do biguasim_sitl.
+biguasim_waypoints:
+  ros__parameters:
+    modo: "guided"          # guided | mission
+    gps_lat: 33.810313
+    gps_lon: -118.393867
+
+    # Quadrado de 10 m a 3 m de profundidade: [x,y,z, x,y,z, ...]
+    waypoints: [
+      10.0,  0.0, -3.0,
+      10.0, 10.0, -3.0,
+       0.0, 10.0, -3.0,
+       0.0,  0.0, -3.0
+    ]
+
+    tolerancia: 2.0         # raio de aceitação, metros
+    repetir: false
+    armar: true
+    taxa_envio: 5.0         # Hz dos setpoints em modo guided
+    espera_mavros: 30.0

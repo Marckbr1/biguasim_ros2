@@ -26,6 +26,7 @@ setup(
     entry_points={
         'console_scripts': [
             'sitl_node = biguasim_sitl.sitl_node:main',
+            'waypoint_node = biguasim_sitl.waypoint_node:main',
         ],
     },
 )

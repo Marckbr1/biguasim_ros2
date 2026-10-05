@@ -1,0 +1,7 @@
+image: mapa.png
+resolution: 0.1
+origin:
+  x: -140.500000
+  y: -444.500000
+  z: 0.0
+coordinate_system: world

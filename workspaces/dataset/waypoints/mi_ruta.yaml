@@ -1,0 +1,5 @@
+type: waypoints
+waypoints_csv_path: mi_ruta.csv
+loop_trajectory: false
+arrival_tolerance_m: 1.0
+closed_loop_waypoints: true   # wait for the real arrival at each point

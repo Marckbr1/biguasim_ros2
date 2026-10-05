@@ -1,0 +1,4 @@
+type: waypoints
+waypoints_csv_path: mi_ruta2.csv
+loop_trajectory: false
+arrival_tolerance_m: 1.0

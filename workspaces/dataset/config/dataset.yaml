@@ -1,0 +1,95 @@
+# What gets written to disk and in which format. Each writer maps one
+# sensor (from config/simulator_rov.yaml) to a file:
+#   tabular -> CSV, image -> PNG, numpy -> .npy
+# Remove any writer you don't need (e.g. rgb, sonar_*) to get a lighter
+# dataset; the simulator config does not need to change.
+#
+# Runs end up in <output_root>/<dataset_name>/runs/<run_id>/.
+output_root: dataset   # relative to colecta_simple/ (the .sh scripts cd there)
+dataset_name: colecta_simple
+
+auto_create_run: true
+
+writers:
+
+  # --- Ground truth (DynamicsSensor, global frame, vehicle COM) ---
+  ground_truth:
+    type: tabular
+    sensor: DynamicsSensor
+    output: ground_truth
+    filename: ground_truth.csv
+
+  # --- IMU ---
+  imu:
+    type: tabular
+    sensor: IMUSensor
+    output: imu
+    filename: imu.csv
+
+  # --- DVL ---
+  dvl:
+    type: tabular
+    sensor: DVLSensor
+    output: dvl
+    filename: dvl.csv
+
+  # --- Depth / pressure ---
+  depth:
+    type: tabular
+    sensor: DepthSensor
+    output: depth
+    filename: depth.csv
+
+  # --- Magnetometer ---
+  magnetometer:
+    type: tabular
+    sensor: MagnetometerSensor
+    output: magnetometer
+    filename: magnetometer.csv
+
+  # --- RGB camera ---
+  rgb:
+    type: image
+    sensor: RGBCamera
+    output: rgb
+    extension: png
+    remove_alpha: true
+
+  # --- Semantic segmentation ---
+  segmentation:
+    type: image
+    sensor: AnnotationComponent
+    output: segmentation
+    channel_order: rgb
+    extension: png
+    remove_alpha: true
+
+  # --- Imaging sonar: 4 channels, each one a separate 'numpy' writer
+  #     selected with field= ---
+  sonar_raw:
+    type: numpy
+    sensor: ImagingSonar
+    field: raw
+    output: sonar/raw
+    extension: npy
+
+  sonar_intensity:
+    type: numpy
+    sensor: ImagingSonar
+    field: gt_intensity
+    output: sonar/intensity
+    extension: npy
+
+  sonar_elevation:
+    type: numpy
+    sensor: ImagingSonar
+    field: gt_elevation
+    output: sonar/elevation
+    extension: npy
+
+  sonar_pointcloud:
+    type: numpy
+    sensor: ImagingSonar
+    field: pointcloud
+    output: sonar/pointcloud
+    extension: npy

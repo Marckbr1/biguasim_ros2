@@ -1,0 +1,19 @@
+# Example trajectory: 6 waypoints (~35 m at 1 m/s, ~45 s) near the ROV
+# spawn ([59, -245, -1] in config/simulator_rov.yaml), taken from the
+# first leg of the route already tested in colecta_biguasim
+# (configs/examples/waypoints_ejemplo.csv).
+#
+# CSV columns: waypoint_id,x,y,z,yaw_deg,speed_mps,hold_time_s
+#   - x,y,z are ABSOLUTE BiguaSim world coordinates (same frame as map/mapa.yaml)
+#   - negative z = underwater
+#   - the spawn does not need to be the first waypoint: an automatic
+#     TRANSIT leg is added from the spawn to the first waypoint.
+type: waypoints
+
+# Relative to this YAML.
+waypoints_csv_path: example.csv
+
+loop_trajectory: false
+
+# Radius (m) used to consider a waypoint "reached" (live log).
+arrival_tolerance_m: 1.0

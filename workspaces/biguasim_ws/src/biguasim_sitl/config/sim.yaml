@@ -1,0 +1,80 @@
+# =====================================================================
+#  BiguaSim SITL + MAVROS + QGroundControl — configuração única
+#
+#  Este é o ÚNICO arquivo que precisa ser editado para rodar a simulação.
+#  Edições aqui valem na próxima execução, sem recompilar.
+#
+#  Rodar:   ./scripts/run_sim.sh
+# =====================================================================
+
+# Workspace ROS 2 onde está o pacote biguasim_sitl
+workspace: ~/workspaces/biguasim_ws
+
+# ---------------------------------------------------------------------
+# ArduPilot SITL (sim_vehicle.py) — abre numa janela xterm própria,
+# com o prompt do MAVProxy (MAV> / GUIDED>) para comandos manuais.
+# ---------------------------------------------------------------------
+ardupilot:
+  path: ~/ardupilot-sitl          # clone próprio (o embutido no BiguaSim não compila)
+  vehicle: ArduSub
+  model: JSON:127.0.0.1           # física vem do BiguaSim pelo backend JSON
+  serial0_port: 5760              # TCP do SERIAL0; o launch espera ela abrir antes do nó SITL
+
+  # Posição inicial: use UM dos dois.
+  location: RATBeach              # nome em Tools/autotest/locations.txt
+  custom_location: ""             # "lat,lon,alt,heading" — se preenchido, ignora 'location'
+
+  console: false                  # console do MAVProxy (precisa de wxPython)
+  map: false                      # mapa do MAVProxy (precisa de wxPython; o QGC já tem mapa)
+  skip_rebuild: true              # -N: não recompila se o binário já existe (início rápido)
+  wipe_params: false              # -w: apaga parâmetros salvos (eeprom.bin) ao iniciar
+  run_dir: "~"                    # onde ficam eeprom.bin e logs do SITL
+  extra_args: ""                  # argumentos extras para o sim_vehicle.py
+
+# ---------------------------------------------------------------------
+# Nó SITL do BiguaSim (abre o Unreal Engine)
+# ---------------------------------------------------------------------
+sitl:
+  enable_sonar: false
+  enable_camera: false
+  params_file: ""                 # vazio = config/sitl_params.yaml do pacote
+  launch_args: {}                 # outros argumentos para sitl.launch.py (use_mavros é sempre false)
+  ready_text: "online"            # texto no log do nó que indica ArduPilot conectado
+  ready_timeout: 90               # s; se o texto não aparecer, segue mesmo assim
+  port_timeout: 60                # s; espera máxima pelo ArduPilot abrir a serial0_port
+
+# ---------------------------------------------------------------------
+# MAVROS — sobe quando o nó SITL fica pronto
+# QGroundControl usa a 14550 (criada pelo MAVProxy automaticamente).
+# ---------------------------------------------------------------------
+mavros:
+  enabled: true
+  port: 14551                     # o MAVProxy recebe --out=udp:127.0.0.1:<port>
+  extra_params: {}                # parâmetros extras do mavros_node
+
+# ---------------------------------------------------------------------
+# Nó de waypoints
+# ---------------------------------------------------------------------
+waypoints:
+  enabled: true
+  modo: guided                    # guided | mission
+  params_file: ""                 # vazio = config/waypoints.yaml do pacote (lista de waypoints)
+  wait_text: "is using GPS"       # sobe quando o FCU avisa que o EKF tem posição ("" = não espera)
+  wait_timeout: 120               # s; se o texto não aparecer, sobe mesmo assim
+  delay: 2.0                      # s extras depois do texto
+  launch_args: {}                 # outros argumentos para waypoints.launch.py
+
+# ---------------------------------------------------------------------
+# QGroundControl (opcional). Vazio = não abre (ex.: QGC rodando no host).
+# ---------------------------------------------------------------------
+qgroundcontrol:
+  path: ""                        # ex.: ~/QGroundControl.AppImage
+
+# ---------------------------------------------------------------------
+# Janela do ArduPilot
+#   xterm -> janela própria, prompt do MAVProxy interativo (recomendado)
+#   none  -> roda junto no terminal do launch, MAVProxy não interativo
+# ---------------------------------------------------------------------
+terminal:
+  program: xterm
+  hold_on_exit: true              # mantém a janela aberta se o processo morrer (ver erro)

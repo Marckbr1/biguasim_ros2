@@ -18,3 +18,9 @@ log/
 *.mcap
 *:Zone.Identifier
 *:Zone.Identifier
+
+# resultados do EKF (não versionar)
+workspaces/biguasim_ws/bag_*/
+workspaces/biguasim_ws/*.png
+workspaces/biguasim_ws/*.tum
+workspaces/biguasim_ws/*.csv

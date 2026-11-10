@@ -24,6 +24,7 @@ setup(
     entry_points={
         "console_scripts": [
             "trajectory_generator = biguasim_trajectory.trajectory_generator_node:main",
+            'ekf_3d_node = biguasim_trajectory.ekf_3d_node:main',
         ],
     },
 )

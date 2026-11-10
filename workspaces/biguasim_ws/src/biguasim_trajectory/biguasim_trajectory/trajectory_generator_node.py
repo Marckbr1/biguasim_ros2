@@ -3,15 +3,8 @@ vehiculo via la abstraccion 'cmd_pos_yaw' de BiguaSim ([x, y, z, yaw_deg]),
 y publica ademas la velocidad de cuerpo comandada (analitica, derivada de la
 propia trayectoria) en <agent_ros_id>/cmd_vel_body.
 
-Portado y recortado de biguasim_trajectory en el workspace 'anterior':
-trajectory_type solo acepta 'square' | 'circle' (el foco actual), 'line' y
-'figure_eight' quedaron fuera.
-
-Requiere que el agente indicado en agent_ros_id tenga
-control_abstraction: 'cmd_pos_yaw' en el escenario de biguasim_main (ver
-config/trajectory_scenario.yaml en este mismo paquete) -- con
-'cmd_motor_speeds' (el default de biguasim_main/config/config.yaml) este
-nodo no mueve el vehiculo.
+Actualizado para soporte del agente hibrido (DjiMatrice / uav0) y operacion
+estable subacuatica a cota profunda fija (-3.5 m).
 """
 
 import rclpy
@@ -35,14 +28,15 @@ class TrajectoryGeneratorNode(Node):
     def __init__(self):
         super().__init__('trajectory_generator')
 
-        self.declare_parameter('agent_ros_id', 'auv0_id0')
+        # Parametros configurables (actualizados por defecto a uav0_id0 y profundidad -3.5m)
+        self.declare_parameter('agent_ros_id', 'uav0_id0')
         self.declare_parameter('trajectory_type', 'square')
-        self.declare_parameter('square_side', 10.0)
+        self.declare_parameter('square_side', 15.0)
         self.declare_parameter('circle_radius', 5.0)
         self.declare_parameter('num_loops', 1)
-        self.declare_parameter('speed', 1.0)
+        self.declare_parameter('speed', 0.8)
         self.declare_parameter('dive_speed', 0.3)
-        self.declare_parameter('target_depth', -3.0)
+        self.declare_parameter('target_depth', -3.5)
         self.declare_parameter('corner_wait_time', 3.0)
         self.declare_parameter('control_rate_hz', 10.0)
         self.declare_parameter('loop_trajectory', False)
@@ -64,21 +58,26 @@ class TrajectoryGeneratorNode(Node):
         self._finished_logged = False
         self._node_start_time = self.get_clock().now()
 
+        # Construccion robusta de nombres de topicos compatibles con BiguaSim
+        prefix = f'/biguasim/{self._agent_ros_id}' if not self._agent_ros_id.startswith('/biguasim/') else self._agent_ros_id
+        odom_topic = f'{prefix}/DynamicsSensor/Odom'
+        control_topic = f'{prefix}/command_control'
+        cmd_vel_topic = f'{prefix}/cmd_vel_body'
+
         self._gt_sub = self.create_subscription(
-            Odometry, f'{self._agent_ros_id}/DynamicsSensor/Odom', self._ground_truth_callback, 10)
+            Odometry, odom_topic, self._ground_truth_callback, 10)
         self._control_pub = self.create_publisher(
-            Float64MultiArray, f'{self._agent_ros_id}/command_control', 10)
+            Float64MultiArray, control_topic, 10)
         self._cmd_vel_pub = self.create_publisher(
-            TwistStamped, f'{self._agent_ros_id}/cmd_vel_body', 10)
+            TwistStamped, cmd_vel_topic, 10)
 
         control_rate_hz = self.get_parameter('control_rate_hz').value
         self._timer = self.create_timer(1.0 / control_rate_hz, self._tick)
 
         self.get_logger().info(
-            f"Esperando primer mensaje de ground truth en "
-            f"{self._agent_ros_id}/DynamicsSensor/Odom...")
+            f"Esperando primer mensaje de ground truth en: {odom_topic}")
 
-    def _ground_truth_callback(self, msg):
+    def _ground_truth_callback(self, msg: Odometry):
         if self._origin_captured:
             return
         self._origin_x = msg.pose.pose.position.x
@@ -86,7 +85,7 @@ class TrajectoryGeneratorNode(Node):
         self._origin_z = msg.pose.pose.position.z
         self._origin_captured = True
         self.get_logger().info(
-            f"Origen capturado: ({self._origin_x:.2f}, {self._origin_y:.2f}, {self._origin_z:.2f})")
+            f"Origen capturado: (X={self._origin_x:.2f}, Y={self._origin_y:.2f}, Z={self._origin_z:.2f})")
 
     def _build_shape_segments(self):
         speed = self.get_parameter('speed').value
@@ -115,22 +114,24 @@ class TrajectoryGeneratorNode(Node):
             duration=dive_duration)
 
         return TrajectoryPlan([dive] + shape_segments,
-                               origin_x=self._origin_x, origin_y=self._origin_y)
+                              origin_x=self._origin_x, origin_y=self._origin_y)
 
     def _tick(self):
         if self._plan is None:
             if self._origin_captured:
                 self._plan = self._build_plan()
                 self._t_start = self.get_clock().now()
-                self.get_logger().info(f"Trayectoria '{self._trajectory_type}' iniciada.")
+                self.get_logger().info(
+                    f"Trayectoria '{self._trajectory_type}' iniciada a profundidad {self.get_parameter('target_depth').value} m.")
             else:
                 elapsed = (self.get_clock().now() - self._node_start_time).nanoseconds * 1e-9
                 if elapsed >= self._startup_timeout:
+                    target_depth = self.get_parameter('target_depth').value
                     self.get_logger().warn(
-                        "No llego ground truth a tiempo; asumiendo origen (0, 0, target_depth).")
+                        f"No llego ground truth a tiempo; asumiendo origen (0.0, 0.0, {target_depth}).")
                     self._origin_x = 0.0
                     self._origin_y = 0.0
-                    self._origin_z = self.get_parameter('target_depth').value
+                    self._origin_z = target_depth
                     self._origin_captured = True
                 return
 

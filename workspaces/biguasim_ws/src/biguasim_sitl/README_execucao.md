@@ -4,9 +4,17 @@ Cadeia completa: ArduSub (SITL, física do BiguaSim via JSON) → MAVProxy → M
 
 ## Rodar
 
+No host:
+
 ```bash
-/mnt/HD2/biguasim_ros2/docker/enter_container.sh
-cd ~/workspaces/biguasim_ws/src/<caminho>/biguasim_sitl
+xhost +local:
+/mnt/HD2/biguasim_ros2/docker/start_container.sh   # ou enter_container.sh, se já estiver ligado
+```
+
+Dentro do contêiner (prompt `biguauser@...`):
+
+```bash
+cd ~/workspaces/biguasim_ws/src/biguasim_sitl
 ./scripts/run_sim.sh
 ```
 
@@ -14,9 +22,12 @@ Só isso. Na primeira vez após recriar o contêiner, o script instala as depend
 
 O que abre:
 
-- janela **ArduPilot SITL** (xterm) com o prompt do MAVProxy, mais console e mapa;
+- janela **ArduPilot SITL** (xterm) com o prompt do MAVProxy;
 - o Unreal Engine (nó SITL);
-- MAVROS e waypoints, com log no terminal onde você rodou o script.
+- MAVROS, assim que o nó SITL fica online;
+- waypoints, só quando o EKF passa a usar GPS (`EKF3 IMU0 is using GPS`). Antes disso o ArduSub recusa GUIDED, então pode levar alguns minutos, porque a simulação roda mais devagar que o tempo real.
+
+Os logs de tudo saem no terminal onde você rodou o script.
 
 O QGroundControl conecta sozinho na UDP 14550. **Ctrl+C** no terminal do script encerra tudo e limpa os processos do ArduPilot.
 
@@ -43,4 +54,6 @@ No MAVProxy, o prompt muda de `MAV>` para `GUIDED>` quando o modo é aceito.
 | MAVROS só sobe após ~90 s | O texto de `sitl.ready_text` não apareceu no log do nó; ajuste o texto ou reduza `sitl.ready_timeout` |
 | Mudança no launch não aparece | `./scripts/run_sim.sh --rebuild` |
 | `-L RATBeach` não encontrado | A localização sumiu do `locations.txt`; use `custom_location` no `sim.yaml` |
-| Nada gráfico abre | `DISPLAY` vazio no contêiner |
+| Nada gráfico abre | Rode `xhost +local:` no host antes de ligar o contêiner |
+| Waypoints sobem por timeout e o GUIDED é recusado ("Guided requires position") | O EKF ainda não tem posição; aumente `waypoints.wait_timeout` |
+| Console/mapa do MAVProxy não abrem (`No module named 'wx'`) | Desligados por padrão; para usar, instale `python3-wxgtk4.0` e ponha `console`/`map` em `true` |
